@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis History - Career Cosmos{% endblock %}
+
+{% block content %}
+<div class="history-container">
+    <div class="history-header">
+        <h1><i class="fas fa-history"></i> Analysis History</h1>
+        <p>Track your resume optimization progress</p>
+    </div>
+
+    {% if history %}
+    <div class="history-list">
+        {% for item in history %}
+        <div class="history-item">
+            <div class="history-info">
+                <h3 class="history-filename">
+                    <i class="fas fa-file-alt"></i>
+                    {{ item[1] }}
+                </h3>
+                <div class="history-date">
+                    <i class="fas fa-calendar"></i>
+                    {{ item[5] }}
+                </div>
+            </div>
+            <div class="history-stats">
+                <div class="stat">
+                    <span class="stat-label">ATS Score</span>
+                    {% set score = item[2]|int %}
+                    <span class="stat-value {% if score >= 80 %}score-high{% elif score >= 60 %}score-medium{% else %}score-low{% endif %}">
+                        {{ score }}%
+                    </span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Keywords</span>
+                    <span class="stat-value">{{ item[3]|int }}/{{ item[4]|int }}</span>
+                </div>
+            </div>
+            <div class="history-actions">
+                <a href="{{ url_for('view_analysis', analysis_id=item[0]) }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-eye"></i> View Details
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-chart-line"></i>
+        <h3>No Analysis History</h3>
+        <p>Start analyzing your resume to see your progress here.</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Start Analysis
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.history-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.history-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.history-header h1 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.history-header h1 i {
+    margin-right: 1rem;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.history-item {
+    background-color: var(--surface-color);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 2rem;
+}
+
+.history-info h3 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.history-info h3 i {
+    margin-right: 0.5rem;
+}
+
+.history-date {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.history-date i {
+    margin-right: 0.5rem;
+}
+
+.history-stats {
+    display: flex;
+    gap: 2rem;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    display: block;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.score-high {
+    color: var(--success-color);
+}
+
+.score-medium {
+    color: var(--warning-color);
+}
+
+.score-low {
+    color: var(--error-color);
+}
+
+.history-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-secondary);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.empty-state h3 {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+    .history-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .history-stats {
+        justify-content: center;
+    }
+    
+    .history-actions {
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}

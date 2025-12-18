@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="max-width: 1200px;">
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+            <h1 style="color: var(--primary-color);">
+                <i class="fas fa-chart-bar"></i> Detailed Analysis Report
+            </h1>
+            <div>
+                {% if enhanced_resume %}
+                <a href="{{ url_for('download_enhanced_resume', analysis_id=analysis_id) }}" 
+                   class="btn btn-success" style="margin-right: 1rem;">
+                    <i class="fas fa-download"></i> Download Enhanced Resume
+                </a>
+                {% endif %}
+                <a href="{{ url_for('analysis_history') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to History
+                </a>
+            </div>
+        </div>
+        
+        <div style="background-color: var(--background-color); padding: 1.5rem; border-radius: 5px; margin-bottom: 2rem;">
+            <h3 style="color: var(--primary-color); margin-bottom: 1rem;">
+                <i class="fas fa-file-alt"></i> {{ filename }}
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+                <div style="text-align: center;">
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--primary-color);">
+                        {{ ats_score }}%
+                    </div>
+                    <div>ATS Score</div>
+                </div>
+                {% if analysis_data.ats_analysis %}
+                <div style="text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--success-color);">
+                        {{ analysis_data.ats_analysis.matched_keywords|length }}/{{ analysis_data.ats_analysis.total_keywords }}
+                    </div>
+                    <div>Keywords Matched</div>
+                </div>
+                {% endif %}
+            </div>
+            <p style="color: var(--text-secondary); margin-top: 1rem; text-align: center;">
+                Analyzed on {{ created_at }}
+            </p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="hr-eval">HR Evaluation</button>
+                <button class="tab-btn" data-tab="ats-analysis">ATS Analysis</button>
+                {% if enhanced_resume %}
+                <button class="tab-btn" data-tab="enhanced">Enhanced Resume</button>
+                {% endif %}
+            </div>
+
+            <div id="hr-eval" class="tab-content active">
+                <h3><i class="fas fa-user-tie"></i> HR Professional Evaluation</h3>
+                <div class="evaluation-text">
+                    {{ hr_evaluation|safe if hr_evaluation else "HR evaluation not available" }}
+                </div>
+            </div>
+
+            <div id="ats-analysis" class="tab-content">
+                <h3><i class="fas fa-robot"></i> ATS Scanner Analysis</h3>
+                {% if analysis_data.ats_evaluation %}
+                <div class="evaluation-text">
+                    {{ analysis_data.ats_evaluation|safe }}
+                </div>
+                {% endif %}
+                
+                {% if analysis_data.ats_analysis %}
+                <h4 style="color: var(--primary-color); margin: 2rem 0 1rem 0;">Keyword Breakdown</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem;">
+                    <div>
+                        <h5 style="color: var(--success-color); margin-bottom: 1rem;">
+                            Matched Keywords ({{ analysis_data.ats_analysis.matched_keywords|length }})
+                        </h5>
+                        <div>
+                            {% for keyword in analysis_data.ats_analysis.matched_keywords %}
+                                <span class="keyword-tag">{{ keyword }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div>
+                        <h5 style="color: var(--error-color); margin-bottom: 1rem;">
+                            Missing Keywords ({{ analysis_data.ats_analysis.missing_keywords|length }})
+                        </h5>
+                        <div>
+                            {% for keyword in analysis_data.ats_analysis.missing_keywords[:15] %}
+                                <span class="keyword-tag missing">{{ keyword }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if enhanced_resume %}
+            <div id="enhanced" class="tab-content">
+                <h3><i class="fas fa-magic"></i> AI Enhanced Resume</h3>
+                <div class="content-box">
+                    {{ enhanced_resume|safe }}
+                </div>
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button onclick="copyToClipboard()" class="btn btn-primary">
+                        <i class="fas fa-copy"></i> Copy Enhanced Resume
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard() {
+    const text = document.querySelector('#enhanced .content-box').textContent;
+    
+    navigator.clipboard.writeText(text).then(function() {
+        const btn = event.target.closest('button');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+        }, 2000);
+    }).catch(function(err) {
+        console.error('Could not copy text: ', err);
+    });
+}
+</script>
+{% endblock %}

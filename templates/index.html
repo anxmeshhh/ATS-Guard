@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1><i class="fas fa-chart-line"></i> ATS Resume Enhancement Tool</h1>
+            <p>Get professional HR evaluation and AI-powered resume optimization</p>
+        </div>
+    </div>
+
+    <div class="analysis-container">
+        <div class="upload-section">
+            <h2><i class="fas fa-upload"></i> Upload & Analyze</h2>
+            
+            <form id="analysisForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="job_description">
+                        <i class="fas fa-briefcase"></i>
+                        Job Description *
+                    </label>
+                    <textarea id="job_description" name="job_description" rows="6" 
+                              placeholder="Paste the complete job description here..." required></textarea>
+                    <small>Minimum 50 characters required for accurate analysis</small>
+                </div>
+
+                <div class="upload-options">
+                    <div class="upload-option">
+                        <h3><i class="fas fa-file-upload"></i> Upload Resume File</h3>
+                        <div class="file-upload">
+                            <input type="file" id="resume_file" name="resume_file" 
+                                   accept=".pdf,.docx,.txt">
+                            <label for="resume_file" class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                Choose File (PDF, DOCX, TXT - Max 16MB)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="upload-divider">
+                        <span>OR</span>
+                    </div>
+
+                    <div class="upload-option">
+                        <h3><i class="fas fa-edit"></i> Paste Resume Text</h3>
+                        <textarea id="resume_text" name="resume_text" rows="8" 
+                                  placeholder="Paste your complete resume text here..."></textarea>
+                        <small>Minimum 100 characters required</small>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-large">
+                    <i class="fas fa-search"></i>
+                    Get Professional HR Evaluation
+                </button>
+            </form>
+        </div>
+
+        <!-- HR Evaluation Section -->
+        <div id="hrEvaluation" class="results-section" style="display: none;">
+            <div class="results-header">
+                <h2><i class="fas fa-user-tie"></i> HR Professional Evaluation</h2>
+                <p>Expert assessment of your resume against the job requirements</p>
+            </div>
+            
+            <div class="evaluation-content">
+                <div id="hrEvaluationText" class="evaluation-text"></div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary btn-large" onclick="showATSAnalysis()">
+                    <i class="fas fa-robot"></i>
+                    View ATS Score & Analysis
+                </button>
+            </div>
+        </div>
+
+        <!-- ATS Analysis Section -->
+        <div id="atsAnalysis" class="results-section" style="display: none;">
+            <div class="results-header">
+                <h2><i class="fas fa-chart-bar"></i> ATS Scanner Analysis</h2>
+                <p>Detailed ATS compatibility assessment</p>
+            </div>
+            
+            <div class="score-dashboard">
+                <div class="score-card main-score">
+                    <div class="score-circle">
+                        <div class="score-number" id="totalScore">0</div>
+                        <div class="score-label">ATS Score</div>
+                    </div>
+                </div>
+                
+                <div class="score-breakdown">
+                    <div class="score-item">
+                        <span class="score-category">Keywords</span>
+                        <div class="score-bar">
+                            <div class="score-fill" id="keywordScore"></div>
+                        </div>
+                        <span class="score-value" id="keywordValue">0%</span>
+                    </div>
+                    
+                    <div class="score-item">
+                        <span class="score-category">Format</span>
+                        <div class="score-bar">
+                            <div class="score-fill" id="formatScore"></div>
+                        </div>
+                        <span class="score-value" id="formatValue">0%</span>
+                    </div>
+                    
+                    <div class="score-item">
+                        <span class="score-category">Content</span>
+                        <div class="score-bar">
+                            <div class="score-fill" id="contentScore"></div>
+                        </div>
+                        <span class="score-value" id="contentValue">0%</span>
+                    </div>
+                    
+                    <div class="score-item">
+                        <span class="score-category">Length</span>
+                        <div class="score-bar">
+                            <div class="score-fill" id="lengthScore"></div>
+                        </div>
+                        <span class="score-value" id="lengthValue">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="analysis-details">
+                <div class="detail-card">
+                    <h3><i class="fas fa-key"></i> Keyword Analysis</h3>
+                    <div id="keywordAnalysis"></div>
+                </div>
+
+                <div class="detail-card">
+                    <h3><i class="fas fa-robot"></i> ATS Scanner Evaluation</h3>
+                    <div id="atsEvaluationText" class="evaluation-text"></div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-success btn-large" onclick="generateEnhancedResume()" id="enhanceBtn">
+                    <i class="fas fa-magic"></i>
+                    Generate AI Enhanced Resume
+                </button>
+                <button class="btn btn-secondary" onclick="downloadReport()">
+                    <i class="fas fa-download"></i>
+                    Download Analysis Report
+                </button>
+            </div>
+        </div>
+
+        <!-- Enhanced Resume Section -->
+        <div id="enhancedResumeSection" class="results-section" style="display: none;">
+            <div class="results-header">
+                <h2><i class="fas fa-magic"></i> AI Enhanced Resume</h2>
+                <p>Optimized resume based on HR evaluation and ATS analysis</p>
+            </div>
+            
+            <div class="enhanced-resume-content">
+                <div id="enhancedResumeText" class="content-box"></div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="downloadPDF()" id="downloadBtn">
+                    <i class="fas fa-file-pdf"></i>
+                    Download Enhanced Resume (PDF)
+                </button>
+                <button class="btn btn-primary" onclick="startNewAnalysis()">
+                    <i class="fas fa-plus"></i>
+                    New Analysis
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading" class="loading-overlay" style="display: none;">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p id="loadingText">Getting professional HR evaluation...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
